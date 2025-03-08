@@ -1,6 +1,6 @@
 
 // YouTube API service
-const API_KEY = "YOUR_YOUTUBE_API_KEY"; // Replace with your actual YouTube API key
+const API_KEY = "AIzaSyDQ9Qpe0625tXcKj3WakqJQLdpIQruN3aI"; // YouTube API key
 
 export interface YouTubeVideo {
   id: string;

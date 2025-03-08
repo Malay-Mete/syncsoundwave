@@ -16,7 +16,10 @@ interface AudioPlayerControls {
   audioRef: React.RefObject<HTMLAudioElement>;
 }
 
-export function useAudioPlayer(onPlayChange?: (isPlaying: boolean) => void): [AudioPlayerState, AudioPlayerControls] {
+export function useAudioPlayer(
+  onPlayChange?: (isPlaying: boolean) => void,
+  onTimeUpdate?: (currentTime: number) => void
+): [AudioPlayerState, AudioPlayerControls] {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -41,7 +44,11 @@ export function useAudioPlayer(onPlayChange?: (isPlaying: boolean) => void): [Au
     
     audioRef.current.addEventListener('timeupdate', () => {
       if (audioRef.current) {
-        setCurrentTime(audioRef.current.currentTime);
+        const newTime = audioRef.current.currentTime;
+        setCurrentTime(newTime);
+        if (onTimeUpdate) {
+          onTimeUpdate(newTime);
+        }
       }
     });
     
@@ -147,6 +154,9 @@ export function useAudioPlayer(onPlayChange?: (isPlaying: boolean) => void): [Au
       const newTime = newValue[0];
       audioRef.current.currentTime = (newTime / 100) * duration;
       setCurrentTime((newTime / 100) * duration);
+      if (onTimeUpdate) {
+        onTimeUpdate((newTime / 100) * duration);
+      }
     }
   };
 

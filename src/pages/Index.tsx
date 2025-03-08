@@ -5,13 +5,54 @@ import MusicVisualizer from '@/components/MusicVisualizer';
 import SyncStatus from '@/components/SyncStatus';
 import { Button } from '@/components/ui/button';
 import { Share2, Info, Github, Home, Search, Library, Heart, PlusCircle, User } from 'lucide-react';
+import SearchSongs from '@/components/SearchSongs';
+import { sharePlayback } from '@/utils/shareUtils';
+import { useToast } from '@/hooks/use-toast';
+import { YouTubeVideo } from '@/utils/youtubeApi';
 
 const Index = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isSynced, setIsSynced] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [currentSong, setCurrentSong] = useState<YouTubeVideo | null>(null);
+  const [currentTime, setCurrentTime] = useState(0);
+  const { toast } = useToast();
   
   const toggleSync = () => {
     setIsSynced(!isSynced);
+  };
+  
+  const handleSelectSong = (video: YouTubeVideo) => {
+    setCurrentSong(video);
+    setShowSearch(false);
+    toast({
+      title: "Song selected",
+      description: `Now playing: ${video.title}`,
+    });
+  };
+  
+  const handleShare = async () => {
+    const success = await sharePlayback(
+      currentSong?.title || "Music Stream", 
+      currentTime
+    );
+    
+    if (success) {
+      toast({
+        title: "Sharing successful",
+        description: "Link copied to clipboard!",
+      });
+    } else {
+      toast({
+        title: "Sharing failed",
+        description: "Could not share the link",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  const handleTimeUpdate = (time: number) => {
+    setCurrentTime(time);
   };
   
   return (
@@ -42,10 +83,13 @@ const Index = () => {
               <Home className="h-5 w-5" />
               <span className="font-medium">Home</span>
             </a>
-            <a href="#" className="flex items-center gap-3 text-white/90 hover:text-white p-3 rounded-md hover:bg-white/10 transition-all">
+            <button 
+              onClick={() => setShowSearch(!showSearch)}
+              className="w-full flex items-center gap-3 text-white/90 hover:text-white p-3 rounded-md hover:bg-white/10 transition-all"
+            >
               <Search className="h-5 w-5" />
               <span className="font-medium">Search</span>
-            </a>
+            </button>
             <a href="#" className="flex items-center gap-3 text-white/90 hover:text-white p-3 rounded-md hover:bg-white/10 transition-all">
               <Library className="h-5 w-5" />
               <span className="font-medium">Your Library</span>
@@ -86,7 +130,12 @@ const Index = () => {
                 <Button variant="ghost" size="sm" className="px-3 py-2 rounded-full bg-card text-muted-foreground">
                   <Home className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="sm" className="px-3 py-2 rounded-full bg-card text-muted-foreground">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="px-3 py-2 rounded-full bg-card text-muted-foreground"
+                  onClick={() => setShowSearch(!showSearch)}
+                >
                   <Search className="h-4 w-4" />
                 </Button>
                 <Button variant="ghost" size="sm" className="px-3 py-2 rounded-full bg-card text-muted-foreground">
@@ -103,6 +152,13 @@ const Index = () => {
               </Button>
             </div>
             
+            {showSearch && (
+              <div className="mb-6 spotify-card p-4">
+                <h2 className="text-lg font-semibold mb-3">Search for Songs</h2>
+                <SearchSongs onSelectSong={handleSelectSong} />
+              </div>
+            )}
+            
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-6">
                 <MusicVisualizer isPlaying={isPlaying} className="spotify-card" />
@@ -110,6 +166,8 @@ const Index = () => {
                 <MusicPlayer 
                   className="spotify-card"
                   onPlayChange={(playing: boolean) => setIsPlaying(playing)}
+                  onTimeUpdate={handleTimeUpdate}
+                  currentSong={currentSong}
                 />
                 
                 <div className="flex flex-col sm:flex-row gap-4 lg:hidden">
@@ -121,7 +179,11 @@ const Index = () => {
                     {isSynced ? "Disconnect Sync" : "Connect to Sync"}
                   </Button>
                   
-                  <Button variant="outline" className="flex items-center gap-2 bg-card text-muted-foreground">
+                  <Button 
+                    variant="outline" 
+                    className="flex items-center gap-2 bg-card text-muted-foreground"
+                    onClick={handleShare}
+                  >
                     <Share2 className="h-4 w-4" />
                     Share Link
                   </Button>
@@ -150,7 +212,11 @@ const Index = () => {
                 </div>
                 
                 <div className="hidden lg:flex spotify-card p-4 gap-2">
-                  <Button variant="outline" className="flex-1 flex items-center justify-center gap-2 bg-card text-muted-foreground">
+                  <Button 
+                    variant="outline" 
+                    className="flex-1 flex items-center justify-center gap-2 bg-card text-muted-foreground"
+                    onClick={handleShare}
+                  >
                     <Share2 className="h-4 w-4" />
                     Share
                   </Button>
@@ -174,10 +240,13 @@ const Index = () => {
             <Home className="h-5 w-5" />
             <span className="text-xs mt-1">Home</span>
           </a>
-          <a href="#" className="flex flex-col items-center text-white/70 hover:text-white">
+          <button 
+            className="flex flex-col items-center text-white/70 hover:text-white"
+            onClick={() => setShowSearch(!showSearch)}
+          >
             <Search className="h-5 w-5" />
             <span className="text-xs mt-1">Search</span>
-          </a>
+          </button>
           <a href="#" className="flex flex-col items-center text-white/70 hover:text-white">
             <Library className="h-5 w-5" />
             <span className="text-xs mt-1">Library</span>

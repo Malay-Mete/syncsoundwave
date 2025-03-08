@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,17 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				music: {
+					primary: '#8a2be2',  // Purple
+					secondary: '#1db954', // Green (like Spotify)
+					accent: '#4a90e2',    // Blue
+					background: '#121212', // Dark background
+					text: '#ffffff'        // White text
+				},
+			},
+			fontFamily: {
+				sans: ['Inter', 'sans-serif'],
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -84,11 +95,30 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'pulse-opacity': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.6' }
+				},
+				'equalizer-bar': {
+					'0%, 100%': { height: '0.5rem' },
+					'50%': { height: '2rem' }
+				},
+				'gradient-animation': {
+					'0%': { backgroundPosition: '0% 50%' },
+					'50%': { backgroundPosition: '100% 50%' },
+					'100%': { backgroundPosition: '0% 50%' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'pulse-opacity': 'pulse-opacity 2s ease-in-out infinite',
+				'equalizer-bar-1': 'equalizer-bar 1.2s ease-in-out infinite',
+				'equalizer-bar-2': 'equalizer-bar 1.4s ease-in-out infinite 0.2s',
+				'equalizer-bar-3': 'equalizer-bar 1s ease-in-out infinite 0.3s',
+				'equalizer-bar-4': 'equalizer-bar 1.3s ease-in-out infinite 0.4s',
+				'gradient-animation': 'gradient-animation 6s ease infinite'
 			}
 		}
 	},
